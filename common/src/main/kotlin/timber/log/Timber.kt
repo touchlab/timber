@@ -3,6 +3,12 @@ package timber.log
 expect object Timber{
   val trees:List<Tree>
   val size:Int
+  /**
+   * To avoid thread synchronization in native, pass in a lambda that returns config.
+   * This api version doesn't let you update loggers once set up. In theory this should be
+   * considerably faster, but wasn't when measured. I suspect this has to do with compile optimizations
+   * rather than simply threading issues.
+   */
   fun plant(config:() -> Array<Tree>)
   fun isLoggable(priority: Int, tag: String? = null):Boolean
   fun log(priority: Int, tag: String?, throwable: Throwable?, message: String?)
