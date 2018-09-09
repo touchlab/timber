@@ -7,7 +7,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class TimberTest {
-  @BeforeTest @AfterTest fun after() {
+ /* @BeforeTest @AfterTest fun after() {
     Timber.uprootAll()
   }
 
@@ -56,5 +56,5 @@ class TimberTest {
         "Cannot uproot tree which is not planted: $tree") {
       Timber.uproot(tree)
     }
-  }
+  }*/
 }

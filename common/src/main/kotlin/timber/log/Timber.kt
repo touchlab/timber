@@ -3,17 +3,11 @@ package timber.log
 expect object Timber{
   val trees:List<Tree>
   val size:Int
-  fun uprootAll()
-  fun uproot(tree: Tree)
-  fun plant(tree: Tree)
-  fun plant(vararg  trees: Tree)
-  fun plantAll(trees: Iterable<Tree>)
+  fun plant(config:() -> Array<Tree>)
   fun isLoggable(priority: Int, tag: String? = null):Boolean
   fun log(priority: Int, tag: String?, throwable: Throwable?, message: String?)
   @PublishedApi
   internal fun rawLog(priority: Int, tag: String?, throwable: Throwable?, message: String?)
-
-
 }
 
 const val VERBOSE = 2

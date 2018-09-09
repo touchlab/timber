@@ -17,7 +17,7 @@ class ConcurrencyTest {
 
     @Test
     fun logPerformance() {
-        Timber.plant(CountTree())
+        Timber.plant({ arrayOf(CountTree())})
 
         val messLambda = {"asdf"}
         var start = getTimeMillis()
@@ -32,11 +32,11 @@ class ConcurrencyTest {
     class CountTree():Tree(){
 
         override fun isLoggable(priority: Int, tag: String?): Boolean {
-            return false
+            return true
         }
 
         override fun performLog(priority: Int, tag: String?, throwable: Throwable?, message: String?) {
-//            Counter.logCount++
+            Counter.logCount++
         }
     }
 
