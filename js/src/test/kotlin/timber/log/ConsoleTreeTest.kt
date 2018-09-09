@@ -12,21 +12,21 @@ class ConsoleLogTest {
   private val tree = ConsoleTree(fakeConsole)
 
   @Test fun isLoggable() {
-    assertTrue(tree.isLoggable(Timber.ASSERT))
-    assertTrue(tree.isLoggable(Timber.ERROR))
-    assertTrue(tree.isLoggable(Timber.WARNING))
-    assertTrue(tree.isLoggable(Timber.INFO))
-    assertTrue(tree.isLoggable(Timber.DEBUG))
-    assertFalse(tree.isLoggable(Timber.VERBOSE))
+    assertTrue(tree.isLoggable(ASSERT))
+    assertTrue(tree.isLoggable(ERROR))
+    assertTrue(tree.isLoggable(WARNING))
+    assertTrue(tree.isLoggable(INFO))
+    assertTrue(tree.isLoggable(DEBUG))
+    assertFalse(tree.isLoggable(VERBOSE))
   }
 
   @Test fun logs() {
-    tree.log(Timber.ASSERT, null, null, "assert")
-    tree.log(Timber.ERROR, null, null, "error")
-    tree.log(Timber.WARNING, null, null, "warning")
-    tree.log(Timber.INFO, null, null, "info")
-    tree.log(Timber.DEBUG, null, null, "debug")
-    tree.log(Timber.VERBOSE, null, null, "verbose")
+    tree.log(ASSERT, null, null, "assert")
+    tree.log(ERROR, null, null, "error")
+    tree.log(WARNING, null, null, "warning")
+    tree.log(INFO, null, null, "info")
+    tree.log(DEBUG, null, null, "debug")
+    tree.log(VERBOSE, null, null, "verbose")
 
     // TODO fix messages https://youtrack.jetbrains.com/issue/KT-15223
     val expected = listOf(

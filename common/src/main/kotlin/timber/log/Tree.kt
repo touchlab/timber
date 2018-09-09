@@ -1,12 +1,5 @@
 package timber.log
 
-import timber.log.Timber.ASSERT
-import timber.log.Timber.DEBUG
-import timber.log.Timber.ERROR
-import timber.log.Timber.INFO
-import timber.log.Timber.VERBOSE
-import timber.log.Timber.WARNING
-
 abstract class Tree {
   /**
    * Returns true when [priority] will be logged. Behavior is undefined for values other than

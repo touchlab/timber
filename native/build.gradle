@@ -1,0 +1,19 @@
+apply plugin: 'kotlin-platform-native'
+
+//archivesBaseName = 'timber'
+
+sourceSets {
+    main {
+        component {
+            baseName.set("timberNative")
+            target /*'ios_arm32', 'ios_arm64', 'ios_x64',*/ 'macos_x64'
+            outputKinds = [KLIBRARY]
+        }
+    }
+}
+
+dependencies {
+    expectedBy project(':common')
+}
+
+//apply from: rootProject.file('gradle/gradle-mvn-push.gradle')

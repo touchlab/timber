@@ -1,6 +1,72 @@
 package timber.log
 
-object Timber {
+expect object Timber{
+  val trees:List<Tree>
+  val size:Int
+  fun uprootAll()
+  fun uproot(tree: Tree)
+  fun plant(tree: Tree)
+  fun plant(vararg  trees: Tree)
+  fun plantAll(trees: Iterable<Tree>)
+  fun isLoggable(priority: Int, tag: String? = null):Boolean
+  fun log(priority: Int, tag: String?, throwable: Throwable?, message: String?)
+  @PublishedApi
+  internal fun rawLog(priority: Int, tag: String?, throwable: Throwable?, message: String?)
+
+
+}
+
+const val VERBOSE = 2
+const val DEBUG = 3
+const val INFO = 4
+const val WARNING = 5
+const val ERROR = 6
+const val ASSERT = 7
+
+fun Timber.tagged(tag: String): Tree {
+  val taggedTag = tag
+  return object : Tree() {
+    override fun isLoggable(priority: Int, tag: String?): Boolean {
+      return Timber.isLoggable(priority, tag ?: taggedTag)
+    }
+
+    override fun performLog(priority: Int, tag: String?, throwable: Throwable?, message: String?) {
+      Timber.log(priority, tag ?: taggedTag, throwable, message)
+    }
+  }
+}
+
+inline fun Timber.log(priority: Int, throwable: Throwable? = null, message: () -> String) {
+  if (isLoggable(priority, null)) {
+    rawLog(priority, null, throwable, message())
+  }
+}
+
+inline fun Timber.assert(throwable: Throwable? = null, message: () -> String) {
+  log(ASSERT, throwable, message)
+}
+
+inline fun Timber.error(throwable: Throwable? = null, message: () -> String) {
+  log(ERROR, throwable, message)
+}
+
+inline fun Timber.warn(throwable: Throwable? = null, message: () -> String) {
+  log(WARNING, throwable, message)
+}
+
+inline fun Timber.info(throwable: Throwable? = null, message: () -> String) {
+  log(INFO, throwable, message)
+}
+
+inline fun Timber.debug(throwable: Throwable? = null, message: () -> String) {
+  log(DEBUG, throwable, message)
+}
+
+inline fun Timber.verbose(throwable: Throwable? = null, message: () -> String) {
+  log(VERBOSE, throwable, message)
+}
+
+/*object TimberA {
   private val forestList = mutableListOf<Tree>()
   private var forestArray: Array<Tree> = emptyArray()
 
@@ -49,7 +115,7 @@ object Timber {
     forestArray.forEach { it.log(priority, tag, throwable, message) }
   }
 
-  /** Invoked only when [isLoggable] has returned true. */
+  *//** Invoked only when [isLoggable] has returned true. *//*
   @PublishedApi
   internal fun rawLog(priority: Int, tag: String?, throwable: Throwable?, message: String?) {
     forestArray.forEach { it.rawLog(priority, tag, throwable, message) }
@@ -68,40 +134,5 @@ object Timber {
     }
   }
 
-  const val VERBOSE = 2
-  const val DEBUG = 3
-  const val INFO = 4
-  const val WARNING = 5
-  const val ERROR = 6
-  const val ASSERT = 7
-}
 
-inline fun Timber.log(priority: Int, throwable: Throwable? = null, message: () -> String) {
-  if (isLoggable(priority, null)) {
-    rawLog(priority, null, throwable, message())
-  }
-}
-
-inline fun Timber.assert(throwable: Throwable? = null, message: () -> String) {
-  log(ASSERT, throwable, message)
-}
-
-inline fun Timber.error(throwable: Throwable? = null, message: () -> String) {
-  log(ERROR, throwable, message)
-}
-
-inline fun Timber.warn(throwable: Throwable? = null, message: () -> String) {
-  log(WARNING, throwable, message)
-}
-
-inline fun Timber.info(throwable: Throwable? = null, message: () -> String) {
-  log(INFO, throwable, message)
-}
-
-inline fun Timber.debug(throwable: Throwable? = null, message: () -> String) {
-  log(DEBUG, throwable, message)
-}
-
-inline fun Timber.verbose(throwable: Throwable? = null, message: () -> String) {
-  log(VERBOSE, throwable, message)
-}
+}*/

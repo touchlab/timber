@@ -1,11 +1,11 @@
 package timber.log
 
-class ListTree(allowedLevel: Int = Timber.VERBOSE, allowedTags: Set<String> = setOf()) : Tree() {
+class ListTree(allowedLevel: Int = VERBOSE, allowedTags: Set<String> = setOf()) : Tree() {
   val allowedTags = allowedTags.toMutableSet()
   var allowedLevel = allowedLevel
     set(value) {
       when (value) {
-        Timber.VERBOSE, Timber.DEBUG, Timber.INFO, Timber.WARNING, Timber.ERROR, Timber.ASSERT -> {
+        VERBOSE, DEBUG, INFO, WARNING, ERROR, ASSERT -> {
           field = value
         }
         else -> throw IllegalArgumentException("Unknown log level: $value")
@@ -43,12 +43,12 @@ class ListTree(allowedLevel: Int = Timber.VERBOSE, allowedTags: Set<String> = se
   }
 
   private fun Int.toPriorityString() = when(this) {
-    Timber.VERBOSE -> "VERBOSE"
-    Timber.DEBUG -> "DEBUG"
-    Timber.INFO -> "INFO"
-    Timber.WARNING -> "WARNING"
-    Timber.ERROR -> "ERROR"
-    Timber.ASSERT -> "ASSERT"
+    VERBOSE -> "VERBOSE"
+    DEBUG -> "DEBUG"
+    INFO -> "INFO"
+    WARNING -> "WARNING"
+    ERROR -> "ERROR"
+    ASSERT -> "ASSERT"
     else -> throw IllegalArgumentException("Unknown priority: $this")
   }
 }
