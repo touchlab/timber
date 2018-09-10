@@ -16,4 +16,15 @@ dependencies {
     expectedBy project(':common')
 }
 
+group = GROUP
+version = "5.0.0-a1"
+
+apply plugin: 'maven-publish'
+
+apply from: '../gradle/configpublishnative.gradle'
+
+if(project.hasProperty('deployIos')) {
+    apply from: '../gradle/configbintray.gradle'
+}
+
 //apply from: rootProject.file('gradle/gradle-mvn-push.gradle')

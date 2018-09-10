@@ -1,40 +1,102 @@
 package timber.log
 
-expect object Timber{
+object Timber{
+  private val forestArray: NativeBox<Array<Tree>> = NativeBox(emptyArray())
+
   val trees:List<Tree>
+  get() = forestArray.value.toList()
+
   val size:Int
-  fun uprootAll()
-  fun uproot(tree: Tree)
-  fun plant(tree: Tree)
-  fun plant(vararg  trees: Tree)
-  fun plantAll(trees: Iterable<Tree>)
-  fun isLoggable(priority: Int, tag: String? = null):Boolean
-  fun log(priority: Int, tag: String?, throwable: Throwable?, message: String?)
-  @PublishedApi
-  internal fun rawLog(priority: Int, tag: String?, throwable: Throwable?, message: String?)
+  get() = forestArray.value.size
 
-
-}
-
-const val VERBOSE = 2
-const val DEBUG = 3
-const val INFO = 4
-const val WARNING = 5
-const val ERROR = 6
-const val ASSERT = 7
-
-fun Timber.tagged(tag: String): Tree {
-  val taggedTag = tag
-  return object : Tree() {
-    override fun isLoggable(priority: Int, tag: String?): Boolean {
-      return Timber.isLoggable(priority, tag ?: taggedTag)
-    }
-
-    override fun performLog(priority: Int, tag: String?, throwable: Throwable?, message: String?) {
-      Timber.log(priority, tag ?: taggedTag, throwable, message)
+  fun uprootAll() {
+    synchronized2(forestArray) {
+      forestArray.value = emptyArray()
     }
   }
+
+  fun uproot(tree: Tree) {
+    synchronized2(forestArray) {
+      val newList = mutableListOf<Tree>()
+      var treeFound = false
+      for (ltree in forestArray.value) {
+        if (ltree == tree) {
+          treeFound = true
+        } else {
+          newList.add(ltree)
+        }
+      }
+      require(treeFound) { "Cannot uproot tree which is not planted: $tree" }
+      forestArray.value = newList.toTypedArray()
+    }
+  }
+
+  fun plant(tree: Tree) {
+    synchronized2(forestArray) {
+      val newList = mutableListOf<Tree>()
+      newList.addAll(forestArray.value)
+      newList.add(tree)
+      forestArray.value = newList.toTypedArray()
+    }
+  }
+
+  fun plant(vararg trees: Tree) {
+    synchronized2(forestArray) {
+      val newList = mutableListOf<Tree>()
+      newList.addAll(forestArray.value)
+      newList.addAll(trees)
+      forestArray.value = newList.toTypedArray()
+    }
+  }
+
+  fun plantAll(trees: Iterable<Tree>) {
+    synchronized2(forestArray) {
+      val newList = mutableListOf<Tree>()
+      newList.addAll(forestArray.value)
+      newList.addAll(trees)
+      forestArray.value = newList.toTypedArray()
+    }
+  }
+
+  fun isLoggable(priority: Int, tag: String? = null):Boolean =
+          forestArray.value.any { it.isLoggable(priority, tag) }
+
+  fun log(priority: Int, tag: String?, throwable: Throwable?, message: String?){
+    forestArray.value.forEach { it.log(priority, tag, throwable, message) }
+  }
+
+  @PublishedApi
+  internal fun rawLog(priority: Int, tag: String?, throwable: Throwable?, message: String?){
+    forestArray.value.forEach { it.rawLog(priority, tag, throwable, message) }
+  }
+
+
+  fun tagged(tag: String): Tree {
+    val taggedTag = tag
+    return object : Tree() {
+      override fun isLoggable(priority: Int, tag: String?): Boolean {
+        return Timber.isLoggable(priority, tag ?: taggedTag)
+      }
+
+      override fun performLog(priority: Int, tag: String?, throwable: Throwable?, message: String?) {
+        Timber.log(priority, tag ?: taggedTag, throwable, message)
+      }
+    }
+  }
+
+  const val VERBOSE = 2
+  const val DEBUG = 3
+  const val INFO = 4
+  const val WARNING = 5
+  const val ERROR = 6
+  const val ASSERT = 7
 }
+
+internal expect class NativeBox<T>(t:T){
+  var value:T
+}
+
+internal expect inline fun <R> synchronized2(lock: Any, block: () -> R): R
 
 inline fun Timber.log(priority: Int, throwable: Throwable? = null, message: () -> String) {
   if (isLoggable(priority, null)) {
@@ -65,74 +127,3 @@ inline fun Timber.debug(throwable: Throwable? = null, message: () -> String) {
 inline fun Timber.verbose(throwable: Throwable? = null, message: () -> String) {
   log(VERBOSE, throwable, message)
 }
-
-/*object TimberA {
-  private val forestList = mutableListOf<Tree>()
-  private var forestArray: Array<Tree> = emptyArray()
-
-  val trees get() = forestArray.toList()
-
-  val size get() = forestArray.size
-
-  fun uprootAll() {
-    synchronized(forestList) {
-      forestList.clear()
-      forestArray = emptyArray()
-    }
-  }
-
-  fun uproot(tree: Tree) {
-    synchronized(forestList) {
-      require(forestList.remove(tree)) { "Cannot uproot tree which is not planted: $tree" }
-      forestArray = forestList.toTypedArray()
-    }
-  }
-
-  fun plant(tree: Tree) {
-    synchronized(forestList) {
-      forestList.add(tree)
-      forestArray = forestList.toTypedArray()
-    }
-  }
-
-  fun plant(vararg trees: Tree) {
-    synchronized(forestList) {
-      forestList.addAll(trees)
-      forestArray = forestList.toTypedArray()
-    }
-  }
-
-  fun plantAll(trees: Iterable<Tree>) {
-    synchronized(forestList) {
-      forestList.addAll(trees)
-      forestArray = forestList.toTypedArray()
-    }
-  }
-
-  fun isLoggable(priority: Int, tag: String? = null) = forestArray.any { it.isLoggable(priority, tag) }
-
-  fun log(priority: Int, tag: String?, throwable: Throwable?, message: String?) {
-    forestArray.forEach { it.log(priority, tag, throwable, message) }
-  }
-
-  *//** Invoked only when [isLoggable] has returned true. *//*
-  @PublishedApi
-  internal fun rawLog(priority: Int, tag: String?, throwable: Throwable?, message: String?) {
-    forestArray.forEach { it.rawLog(priority, tag, throwable, message) }
-  }
-
-  fun tagged(tag: String): Tree {
-    val taggedTag = tag
-    return object : Tree() {
-      override fun isLoggable(priority: Int, tag: String?): Boolean {
-        return Timber.isLoggable(priority, tag ?: taggedTag)
-      }
-
-      override fun performLog(priority: Int, tag: String?, throwable: Throwable?, message: String?) {
-        Timber.log(priority, tag ?: taggedTag, throwable, message)
-      }
-    }
-  }
-
-
-}*/

@@ -49,7 +49,7 @@ class LogcatTree @JvmOverloads constructor(private val defaultTag: String = "App
     val length = fullMessage.length
     if (length <= MAX_LOG_LENGTH) {
       // Fast path for small messages which can fit in a single call.
-      if (priority == ASSERT) {
+      if (priority == Timber.ASSERT) {
         Log.wtf(safeTag, fullMessage)
       } else {
         Log.println(priority, safeTag, fullMessage)

@@ -10,79 +10,53 @@ import kotlin.system.getTimeMillis
 import kotlin.native.*
 import kotlin.native.concurrent.*
 import platform.Foundation.*
-
+import kotlin.system.getTimeMillis
 
 class ConcurrencyTest {
-    val INCREMENT_COUNT = 10000000
-
-    @Test
-    fun logPerformance() {
-        Timber.plant(CountTree())
-
-        val messLambda = {"asdf"}
-        var start = getTimeMillis()
-        for(i in 0 until INCREMENT_COUNT){
-//            Timber.rawLog(priority = WARNING, tag = "qwert", throwable = null, message = "asdf")
-            Timber.warn(message = messLambda)
-        }
-
-        println("logs: "+ (getTimeMillis() - start))
-    }
-
-    class CountTree():Tree(){
-
-        override fun isLoggable(priority: Int, tag: String?): Boolean {
-            return false
-        }
-
-        override fun performLog(priority: Int, tag: String?, throwable: Throwable?, message: String?) {
-//            Counter.logCount++
-        }
-    }
-
-    @ThreadLocal
-    object Counter{
-        var logCount = 0
+    @BeforeTest @AfterTest fun after() {
+        Timber.uprootAll()
     }
 
     @Test
-    fun timings() {
+    fun multipleThreads(){
+        val countLogTree = CountLogTree(Timber.INFO)
+        Timber.plant(countLogTree)
 
-        var raw = 0
-        val aInt = AtomicInt(0)
-        var locked = 0
-        val updateLock = NSLock()
-        val aRef = AtomicReference<Int>(0)
+        val COUNT = 10
+        val LOG_RUNS = 100000
+        val workers = Array(COUNT, { _ -> Worker.start() })
 
-        var start = getTimeMillis()
-        for(i in 0 until INCREMENT_COUNT){
-            raw = i
+        val futures = Array(workers.size, { workerIndex ->
+            workers[workerIndex].execute(TransferMode.SAFE, {LOG_RUNS}) {
+                for(i in 0 until it){
+                    Timber.info {"Loggin run $i"}
+                }
+                return@execute it
+            }
+        })
+
+        val futureSet = futures.toSet()
+        var consumed = 0
+
+        while (consumed < futureSet.size) {
+            val ready = futureSet.waitForMultipleFutures(100000)
+            ready.forEach {
+                it.consume {
+                    consumed++
+                }
+            }
+        }
+        workers.forEach {
+            it.requestTermination().consume { _ -> }
         }
 
-        println("raw: "+ (getTimeMillis() - start))
+        assertEquals(COUNT * LOG_RUNS, countLogTree.writeCount.value)
+    }
+}
 
-
-        start = getTimeMillis()
-        for(i in 0 until INCREMENT_COUNT){
-            raw = aInt.value
-        }
-
-        println("atom: "+ (getTimeMillis() - start))
-
-        start = getTimeMillis()
-        for(i in 0 until INCREMENT_COUNT){
-            updateLock.lock()
-            raw = locked
-            updateLock.unlock()
-        }
-
-        println("locked: "+ (getTimeMillis() - start))
-
-        start = getTimeMillis()
-        for(i in 0 until INCREMENT_COUNT){
-            raw = aRef.value
-        }
-
-        println("ref: "+ (getTimeMillis() - start))
+class CountLogTree(minPriority: Int) : NativeLogTree(minPriority) {
+    val writeCount = AtomicInt(0)
+    override fun writeLog(s:String){
+        writeCount.increment()
     }
 }
