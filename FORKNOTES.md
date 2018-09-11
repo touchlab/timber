@@ -38,11 +38,11 @@ Had a JS build issue. Commented it out.
 
 Published to https://dl.bintray.com/touchlabpublic/kotlin
 
-Fork's version is 5.0.0-kn0.9-a1. Kotlin native is changing a lot, so easier to reflect that in the string.
+Fork's version is 5.0.0-kn0.9-a2. Kotlin native is changing a lot, so easier to reflect that in the string.
 
 ```
-android "com.jakewharton.timber:timber-android:5.0.0-kn0.9-a1"
-common "com.jakewharton.timber:timber-common:5.0.0-kn0.9-a1"
-jdk "com.jakewharton.timber:timber-jdk:5.0.0-kn0.9-a1"
-native "com.jakewharton.timber:timberNative:5.0.0-kn0.9-a1"
+android "com.jakewharton.timber:timber-android:5.0.0-kn0.9-a2"
+common "com.jakewharton.timber:timber-common:5.0.0-kn0.9-a2"
+jdk "com.jakewharton.timber:timber-jdk:5.0.0-kn0.9-a2"
+native "com.jakewharton.timber:timberNative:5.0.0-kn0.9-a2"
 ```
