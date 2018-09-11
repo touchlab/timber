@@ -31,4 +31,6 @@ dependencies {
 //  lintChecks project(':android-lint')
 }
 
-apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
+apply from: '../gradle/configpublish.gradle'
+
+//apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
