@@ -24,6 +24,10 @@ AtomicReference on the array, and allows modifications.
 The current native implementation is iOS only, but should be split up to support other native implementations. To do that
 we'd need to use a posix implementation of the mutex, but it should otherwise be fine.
 
+The iOS logging implementation is using NSLog. I didn't see anything in the interop for the newer unified logging, so 
+we'll need more work for that to be enabled. TBH, I didn't look very long. I was mainly focused on the Timber architecture 
+side of things.
+
 From a performance perspective, I'm a little concerned that the actual log calls need to access the array in the AtomicReference,
 as well as the shared list of trees. Due to the nature of how that works, they're all doing some thread synchronization. Should do a
 deeper dive into native and performance to see if that's really worth worrying about. I played with an alternative init structure
