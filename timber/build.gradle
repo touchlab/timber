@@ -1,4 +1,31 @@
+apply plugin: 'com.android.library'
 apply plugin: 'kotlin-multiplatform'
+
+android {
+    compileSdkVersion versions.compileSdk
+
+    defaultConfig {
+        minSdkVersion versions.minSdk
+    }
+
+    lintOptions {
+        textReport true
+        textOutput 'stdout'
+        lintConfig rootProject.file('lint.xml')
+
+        // We run a full lint analysis as build part in CI, so skip vital checks for assemble task.
+        checkReleaseBuilds false
+    }
+
+    // TODO replace with https://issuetracker.google.com/issues/72050365 once released.
+    libraryVariants.all {
+        it.generateBuildConfig.enabled = false
+    }
+}
+
+dependencies {
+    implementation deps.kotlin.stdlib.jdk
+}
 
 kotlin {
     sourceSets {
@@ -30,6 +57,8 @@ kotlin {
         jvm8Main.dependsOn allJvm
         jvm6Test.dependsOn allJvmTest
         jvm8Test.dependsOn allJvmTest
+        androidLibMain.dependsOn allJvm
+        androidLibTest.dependsOn allJvmTest
 
         nativeMain {
         }
@@ -49,6 +78,8 @@ kotlin {
 
         fromPreset(presets.iosX64, 'iosX64')
         fromPreset(presets.iosArm64, 'iosArm64')
+
+        fromPreset(presets.android, 'androidLib')
     }
 
     configure([targets.iosX64, targets.iosArm64]) {
