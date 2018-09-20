@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-def aarType = PUBLISH_TYPE == "aar"
-
-if(aarType){
-    apply plugin: 'digital.wup.android-maven-publish'
-}else{
-    apply plugin: 'maven-publish'
-}
+apply plugin: 'maven-publish'
 
 def pomConfig = {
     licenses {
@@ -47,17 +41,9 @@ version = VERSION_NAME
 group = GROUP
 
 publishing {
-    if(aarType){
-        publications {
-            mavenAar(MavenPublication) {
-                from components.android
-                artifactId POM_ARTIFACT_ID
-            }
-        }
-    }
     repositories {
         maven {
-            url (project.hasProperty('j2objcMavenDeploy') ? project.property('j2objcMavenDeploy') : 'file://nope/')
+            url localMavenDeploy
         }
     }
 }
