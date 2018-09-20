@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-def jarType = PUBLISH_TYPE == "jar"
 def aarType = PUBLISH_TYPE == "aar"
 
 if(aarType){
@@ -44,30 +43,10 @@ def pomConfig = {
     }
 }
 
-if(jarType){
-    task sourcesJar(type: Jar, dependsOn: classes) {
-        classifier = 'sources'
-        from sourceSets.main.allSource
-    }
-
-    artifacts {
-        archives sourcesJar
-    }
-}
-
 version = VERSION_NAME
 group = GROUP
 
 publishing {
-    if(jarType){
-        publications {
-            mavenJava(MavenPublication) {
-                from components.java
-                artifactId POM_ARTIFACT_ID
-                artifact sourcesJar
-            }
-        }
-    }
     if(aarType){
         publications {
             mavenAar(MavenPublication) {
@@ -85,7 +64,7 @@ publishing {
 
 afterEvaluate {
     project.publishing.publications.forEach { publication ->
-//        println("pub.groupId ${publication.groupId}, artifactId ${publication.artifactId}, publication ${publication}")
+        println("pub.groupId ${publication.groupId}, artifactId ${publication.artifactId}, publication ${publication}")
         publication.pom.withXml {
             def root = asNode()
             root.appendNode('name', project.name)

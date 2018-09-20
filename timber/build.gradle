@@ -1,50 +1,60 @@
-apply plugin: 'com.android.library'
-apply plugin: 'checkstyle'
+apply plugin: 'kotlin-multiplatform'
 
-task checkstyle(type: Checkstyle) {
-  configFile rootProject.file('checkstyle.xml')
-  source 'src/main/java'
-  ignoreFailures false
-  showViolations true
-  include '**/*.java'
+kotlin {
+    sourceSets {
+        commonMain {
+            dependencies {
+                implementation deps.kotlin.stdlib.common
+            }
+        }
+        commonTest {
+            dependencies {
+                implementation deps.kotlin.test.common
+                implementation deps.kotlin.test.annotations
+            }
+        }
+        allJvm {
+            dependsOn commonMain
+            dependencies {
+                implementation deps.kotlin.stdlib.jdk
+            }
+        }
+        allJvmTest {
+            dependencies {
+                implementation 'org.jetbrains.kotlin:kotlin-test'
+                implementation 'org.jetbrains.kotlin:kotlin-test-junit'
+            }
+        }
 
-  classpath = files()
+        jvm6Main.dependsOn allJvm
+        jvm8Main.dependsOn allJvm
+        jvm6Test.dependsOn allJvmTest
+        jvm8Test.dependsOn allJvmTest
+
+        nativeMain {
+        }
+
+        nativeTest {
+        }
+    }
+
+    targets {
+        fromPreset(presets.jvm, 'jvm6') {
+            compilations.main.source(sourceSets.allJvm)
+        }
+        fromPreset(presets.jvm, 'jvm8') {
+            compilations.main.source(sourceSets.allJvm)
+        }
+//        fromPreset(presets.js, 'js')
+
+        fromPreset(presets.iosX64, 'iosX64')
+        fromPreset(presets.iosArm64, 'iosArm64')
+    }
+
+    configure([targets.iosX64, targets.iosArm64]) {
+        compilations.main.source(sourceSets.nativeMain)
+        compilations.test.source(sourceSets.nativeTest)
+    }
 }
 
-afterEvaluate {
-  if (project.tasks.findByName('check')) {
-    check.dependsOn('checkstyle')
-  }
-}
-
-android {
-  compileSdkVersion versions.compileSdk
-
-  defaultConfig {
-    minSdkVersion versions.minSdk
-    consumerProguardFiles 'consumer-proguard-rules.pro'
-  }
-
-  lintOptions {
-    textReport true
-    textOutput 'stdout'
-  }
-
-  // TODO replace with https://issuetracker.google.com/issues/72050365 once released.
-  libraryVariants.all {
-    it.generateBuildConfig.enabled = false
-  }
-}
-
-dependencies {
-  implementation deps.annotations
-
-  testImplementation deps.annotations
-  testImplementation deps.junit
-  testImplementation deps.truth
-  testImplementation deps.robolectric
-
-  lintChecks project(':timber-lint')
-}
-
-apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
+apply from: '../gradle/configpublish.gradle'

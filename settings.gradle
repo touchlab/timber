@@ -1,11 +1,12 @@
-rootProject.name = 'timber'
+rootProject.name = 'timberproj'
 
-include ':android'
+include ':timber'
+//include ':android'
 //include ':android-lint'
-include ':common'
+//include ':common'
 //include ':js'
-include ':jdk'
-include ':native'
+//include ':jdk'
+//include ':native'
 //include ':sample'
 
 enableFeaturePreview('GRADLE_METADATA')
