@@ -8,7 +8,8 @@ buildscript {
       'kotlin': '1.3.0-dev-496',
       'kotlinNative' : '0.9',
 
-      'androidPlugin': '3.1.3',
+      //classpath "com.android.tools.build:gradle:3.3.0-alpha10"
+      'androidPlugin': '3.3.0-alpha10',
       'androidTools': '26.1.3',
 
       'butterknife': '8.8.1',
