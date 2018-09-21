@@ -13,7 +13,7 @@ abstract class NativeLogTree(private val minPriority: Int) : Tree(){
             bigMessage.append(message)
         }
         if(throwable != null) {
-            val stacktrace: Array<String> = getCurrentStackTrace()
+            val stacktrace: Array<String> = throwable.getStackTrace()
 
             bigMessage.append("\n${throwable.toString()}")
             for (element in stacktrace) {
@@ -28,6 +28,3 @@ abstract class NativeLogTree(private val minPriority: Int) : Tree(){
 
     override fun isLoggable(priority: Int, tag: String?): Boolean = minPriority <= priority
 }
-
-@SymbolName("Kotlin_getCurrentStackTrace")
-private external fun getCurrentStackTrace(): Array<String>
