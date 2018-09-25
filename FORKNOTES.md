@@ -34,6 +34,8 @@ deeper dive into native and performance to see if that's really worth worrying a
 whereby you provide a lambda to Timber which returns the array of trees. That is kept thread local, and avoids all atomic references 
 between threads, but can't be changed once inited. Again, not sure if that's worth pursuing (probably not).
 
+Native doesn't let you access stack traces for Throwable. Added [an issue](https://github.com/JetBrains/kotlin-native/issues/2046) to hopefully address this.
+
 ## JS
 
 Had a JS build issue. Commented it out.
