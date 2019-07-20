@@ -1,11 +1,8 @@
 rootProject.name = 'timber'
 
+include ':timber-kmp'
 include ':android'
 //include ':android-lint'
-include ':common'
-//include ':js'
-include ':jdk'
-include ':native'
 //include ':sample'
 
 enableFeaturePreview('GRADLE_METADATA')

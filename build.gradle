@@ -5,13 +5,12 @@ buildscript {
       'minSdk': 9,
       'compileSdk': 28,
 
-      'kotlin': '1.3.0',
-      
-      'androidPlugin': '3.1.3',
+      'kotlin': '1.3.41',
+
+      'androidPlugin': '3.4.1',
       'androidTools': '26.1.3',
 
-      'butterknife': '8.8.1',
-      'bintray': '1.8.2-SNAPSHOT',
+      'butterknife': '8.8.1'
   ]
 
   ext.deps = [
@@ -47,24 +46,17 @@ buildscript {
   ]
 
   repositories {
+    mavenCentral()
     jcenter()
     google()
     gradlePluginPortal()
-    maven { url "https://dl.bintray.com/kotlin/kotlin-dev/" }
-    maven { url "https://dl.bintray.com/kotlin/kotlin-eap/" }
-    maven {
-      url  "https://dl.bintray.com/jetbrains/kotlin-native-dependencies"
-    }
   }
 
   dependencies {
     classpath deps.androidPlugin
     classpath 'com.github.ben-manes:gradle-versions-plugin:0.17.0'
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
-    classpath "org.jetbrains.kotlin:kotlin-native-gradle-plugin:${versions.kotlin}"
-    classpath 'digital.wup:android-maven-publish:3.6.2'
     classpath 'com.moowork.gradle:gradle-node-plugin:1.2.0'
-    classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:${versions.bintray}"
   }
 }
 
@@ -73,17 +65,5 @@ subprojects {
     mavenCentral()
     jcenter()
     google()
-    maven { url "https://dl.bintray.com/kotlin/kotlin-dev/" }
-    maven { url "https://dl.bintray.com/kotlin/kotlin-eap/" }
-  }
-
-    tasks.withType(Test) {
-    testLogging {
-      events "failed"
-      exceptionFormat "full"
-      showExceptions true
-      showStackTraces true
-      showCauses true
-    }
   }
 }
